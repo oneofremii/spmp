@@ -27,7 +27,7 @@ expect class DiscordStatus(
     fun setActivity(
         name: String,
         type: Type,
-        status: Status = Status.DO_NOT_DISTURB,
+        status: Status = Status.ONLINE,
         state: String? = null,
         details: String? = null,
         timestamps: Pair<Long?, Long?>? = null,
