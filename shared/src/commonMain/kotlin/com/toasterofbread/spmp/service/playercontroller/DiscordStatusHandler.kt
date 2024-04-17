@@ -48,7 +48,7 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
         updateDiscordStatus(null)
     }
 
-    private fun Database.formatText(text: String, song: Song, title: String, albumTitle: String?): String {
+    private fun Database.formatText(text: String, song: Song, title: String): String {
         val artist_ids: List<String>? = songQueries.artistsById(song.id).executeAsOne().artists?.let { Json.decodeFromString(it) }
         val artist_title: String? = artist_ids?.firstOrNull()?.let {
             mediaItemQueries.titleById(it).executeAsOne().title
@@ -57,14 +57,12 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
         return text
             .replace("\$artist", artist_title ?: getString("discord_status_unknown_artist_replacement"))
             .replace("\$song", title)
-            .replace("\$album", albumTitle ?: getString("discord_status_unknown_album_replacement"))
     }
 
     @Synchronized
     fun updateDiscordStatus(song: Song?): Unit = with(context.database) {
         val status_song: Song? = song ?: player.getSong()
         val song_title: String? = status_song?.getActiveTitle(context.database)
-        val albumTitle: String? = status_song?.Albums.get(context.database)?.firstOrNull()?.getActiveTitle(context.database)
 
         if (status_song == current_status_song && song_title == current_status_title) {
             return
@@ -77,26 +75,31 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
             discord_rpc?.apply {
                 if (status_song == null) {
                     close()
+//                    SpMp.Log.info("Discord status cancelled: No song")
                     return@apply
                 }
 
                 if (song_title == null) {
                     close()
+//                    SpMp.Log.info("Discord status cancelled: Song $status_song has no title")
                     return@apply
                 }
 
                 if (!shouldUpdateStatus()) {
                     close()
+//                    SpMp.Log.info("discord_rpc.shouldUpdateStatus() returned false")
                     return@apply
                 }
 
-                val name: String = formatText(DiscordSettings.Key.STATUS_NAME.get(context), status_song, song_title, albumTitle)
-                val text_a: String = formatText(DiscordSettings.Key.STATUS_TEXT_A.get(context), status_song, song_title, albumTitle)
-                val text_b: String = formatText(DiscordSettings.Key.STATUS_TEXT_B.get(context), status_song, song_title, albumTitle)
-                val text_c: String = formatText(DiscordSettings.Key.STATUS_TEXT_C.get(context), status_song, song_title, albumTitle)
+                val name: String = formatText(DiscordSettings.Key.STATUS_NAME.get(context), status_song, song_title)
+                val text_a: String = formatText(DiscordSettings.Key.STATUS_TEXT_A.get(context), status_song, song_title)
+                val text_b: String = formatText(DiscordSettings.Key.STATUS_TEXT_B.get(context), status_song, song_title)
+                val text_c: String = formatText(DiscordSettings.Key.STATUS_TEXT_C.get(context), status_song, song_title)
 
                 val large_image: String?
                 val small_image: String?
+
+//                SpMp.Log.info("Loading Discord status images for $status_song ($song_title)...")
 
                 try {
                     val artists: List<ArtistRef>? = status_song.Artists.get(context.database)
@@ -113,16 +116,19 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
                 }
 
                 val buttons: MutableList<Pair<String, String>> = mutableListOf<Pair<String, String>>().apply {
-                if (DiscordSettings.Key.SHOW_SONG_BUTTON.get(context)) {
-                add(DiscordSettings.Key.SONG_BUTTON_TEXT.get<String>(context) to status_song.getURL(context))
-                }
-                add(DiscordSettings.Key.PROJECT_BUTTON_TEXT.get<String>(context) to "https://fypmoon.org")
+                    if (DiscordSettings.Key.SHOW_SONG_BUTTON.get(context)) {
+                        add(DiscordSettings.Key.SONG_BUTTON_TEXT.get<String>(context) to status_song.getURL(context))
+                    }
+                    if (DiscordSettings.Key.SHOW_PROJECT_BUTTON.get(context)) {
+                        add(DiscordSettings.Key.PROJECT_BUTTON_TEXT.get<String>(context) to getString("project_url"))
+                    }
                 }
 
+//                SpMp.Log.info("Setting Discord status for song $status_song ($song_title)...")
 
                 setActivity(
                     name = name,
-                    type = DiscordStatus.Type.LISTENING,
+                    type = DiscordStatus.Type.STREAMING,
                     details = text_a.ifEmpty { null },
                     state = text_b.ifEmpty { null },
                     buttons = buttons.ifEmpty { null },
@@ -133,6 +139,8 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
                         if (small_image != null) status_song.Artists.get(context.database)?.firstOrNull()?.getActiveTitle(context.database)
                         else null
                 )
+
+//                SpMp.Log.info("Discord status set for song $status_song ($song_title)")
             }
         }
     }
