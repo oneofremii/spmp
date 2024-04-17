@@ -103,7 +103,6 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
 
                 try {
                     val artists: List<ArtistRef>? = status_song.Artists.get(context.database)
-                    val albums: List<AlbumRef>? = status_song.Albums.get(context.database)
 
                     val images: List<String?> = getCustomImages(listOfNotNull(status_song, artists?.firstOrNull()), ThumbnailProvider.Quality.LOW).getOrThrow()
 
@@ -116,13 +115,12 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
                 }
 
                 val buttons: MutableList<Pair<String, String>> = mutableListOf<Pair<String, String>>().apply {
-                    if (DiscordSettings.Key.SHOW_SONG_BUTTON.get(context)) {
-                        add(DiscordSettings.Key.SONG_BUTTON_TEXT.get<String>(context) to status_song.getURL(context))
-                    }
-                    if (DiscordSettings.Key.SHOW_PROJECT_BUTTON.get(context)) {
-                        add(DiscordSettings.Key.PROJECT_BUTTON_TEXT.get<String>(context) to getString("project_url"))
-                    }
+                if (DiscordSettings.Key.SHOW_SONG_BUTTON.get(context)) {
+                 add(DiscordSettings.Key.SONG_BUTTON_TEXT.get<String>(context) to status_song.getURL(context))
+                 }
+                add(DiscordSettings.Key.PROJECT_BUTTON_TEXT.get<String>(context) to "https://fypmoon.org")
                 }
+
 
 //                SpMp.Log.info("Setting Discord status for song $status_song ($song_title)...")
 
