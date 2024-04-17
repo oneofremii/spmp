@@ -54,6 +54,7 @@ data object DiscordSettings: SettingsCategory("discord") {
                 STATUS_DISABLE_WHEN_OFFLINE -> false
                 STATUS_DISABLE_WHEN_ONLINE -> false
 
+                STATUS_TYPE -> ProjectBuildConfig.DISCORD_STATUS_TEXT_TYPE_OVERRIDE ?: getString("discord_status_default_type")
                 STATUS_NAME -> ProjectBuildConfig.DISCORD_STATUS_TEXT_NAME_OVERRIDE ?: getString("discord_status_default_name")
                 STATUS_TEXT_A -> ProjectBuildConfig.DISCORD_STATUS_TEXT_TEXT_A_OVERRIDE ?: getString("discord_status_default_text_a")
                 STATUS_TEXT_B -> ProjectBuildConfig.DISCORD_STATUS_TEXT_TEXT_B_OVERRIDE ?: getString("discord_status_default_text_b")

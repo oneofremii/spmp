@@ -111,6 +111,12 @@ internal fun getDiscordCategoryItems(context: AppContext): List<SettingsItem> {
         InfoTextSettingsItem(getString("s_discord_status_text_info")),
 
         TextFieldSettingsItem(
+            SettingsValueState(DiscordSettings.Key.STATUS_TYPE.getName()),
+            getString("s_key_discord_status_type"), getString("s_sub_discord_status_type"),
+            getFieldModifier = { Modifier.appTextField() }
+        ),
+
+        TextFieldSettingsItem(
             SettingsValueState(DiscordSettings.Key.STATUS_NAME.getName()),
             getString("s_key_discord_status_name"), getString("s_sub_discord_status_name"),
             getFieldModifier = { Modifier.appTextField() }

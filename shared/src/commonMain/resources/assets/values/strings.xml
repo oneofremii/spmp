@@ -643,6 +643,8 @@
     <string name="s_group_discord_status_content">Status content</string>
     <string name="s_discord_status_text_info">To display information about the current song, use the strings below:&#xA;- $song&#xA;- $artist</string>
 
+    <string name="s_key_discord_status_type">Status Type</string>
+    <string name="s_sub_discord_status_type">PLAYING, STREAMING, LISTENING, WATCHING, COMPETING</string>
     <string name="s_key_discord_status_name">Status title</string>
     <string name="s_sub_discord_status_name">The text displayed after 'Listening to'</string>
     <string name="s_key_discord_status_text_a">Primary status text</string>
@@ -707,6 +709,7 @@
     <string name="song_related_page_no_content">Song has no related content</string>
     <string name="song_related_page_empty_row">No content</string>
 
+    <string name="discord_status_default_type">$LISTENING</string>
     <string name="discord_status_default_name">$artist</string>
     <string name="discord_status_default_text_a">$song</string>
     <string name="discord_status_default_text_b">$artist</string>
