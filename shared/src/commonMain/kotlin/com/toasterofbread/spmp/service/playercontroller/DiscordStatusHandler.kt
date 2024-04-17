@@ -126,7 +126,7 @@ internal class DiscordStatusHandler(val player: PlayerServicePlayer, val context
 
                 setActivity(
                     name = name,
-                    type = DiscordStatus.Type.STREAMING,
+                    type = DiscordStatus.Type.PLAYING,
                     details = text_a.ifEmpty { null },
                     state = text_b.ifEmpty { null },
                     buttons = buttons.ifEmpty { null },
